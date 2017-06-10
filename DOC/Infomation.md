@@ -10,5 +10,5 @@
 * 高 480 pixel
 
 ## 地板
-* 長    pixel
+* 長 640 pixel
 * 高 20 pixel
