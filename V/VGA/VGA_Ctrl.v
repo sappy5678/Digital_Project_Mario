@@ -65,14 +65,14 @@ assign	oCurrent_X	=	(H_Cont>=H_BLANK)	?	H_Cont-H_BLANK	:	11'h0	;
 assign	oCurrent_Y	=	(V_Cont>=V_BLANK)	?	V_Cont-V_BLANK	:	11'h0	;
 
 //	Horizontal Generator: Refer to the pixel clock
-always@(posedge iCLK or negedge iRST_N)
+always@(posedge iCLK /*or negedge iRST_N*/)
 begin
-	if(!iRST_N)
+	/*if(!iRST_N)
 	begin
 		H_Cont		<=	0;
 		oVGA_HS		<=	1;
 	end
-	else
+	else*/
 	begin
 //		if(H_Cont<H_TOTAL)
 		if(H_Cont<H_TOTAL-1)
@@ -88,14 +88,14 @@ begin
 end
 
 //	Vertical Generator: Refer to the horizontal sync
-always@(posedge oVGA_HS or negedge iRST_N)
+always@(posedge oVGA_HS /*or negedge iRST_N*/)
 begin
-	if(!iRST_N)
+	/*if(!iRST_N)
 	begin
 		V_Cont		<=	0;
 		oVGA_VS		<=	1;
 	end
-	else
+	else*/
 	begin
 //		if(V_Cont<V_TOTAL)
 		if(V_Cont<V_TOTAL-1)

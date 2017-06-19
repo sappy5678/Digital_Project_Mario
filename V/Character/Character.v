@@ -1,0 +1,107 @@
+module Character(
+			// 標準型態
+			// 輸出
+			UID, // 唯一辨識ID
+			Type, // 型態
+			Coordinate, // 座標 (X/Y) 左上 0 0
+			Size, // 大小(X/Y) 右下為正			
+			Collision_Enable, // 是否可以碰撞 1 可 0 會穿透			
+			
+			// 輸入
+			Collision, // 碰撞 (上/下/左/右)
+			Collision_Type,   // 碰撞物體的型態
+			clk, // Clock
+			Mario_Signal, // 訊號
+			
+			// 瑪利歐獨有型態
+			// 輸出
+			Life, // 生命值
+			Score, // 分數
+			
+			// 輸入
+			Arrow, // 方向箭頭
+			rst, // Reset
+			// Test
+			Test,
+
+			
+	);
+	output [31:0]Test;
+	// 標準輸出
+	output [9:0]UID = 0; // 唯一辨識ID
+	output [9:0]Type = 0; // 型態
+	output [31:0]Coordinate; // 座標 10/10 bits(X/Y) 左上 0 0
+	output [31:0]Size; // 大小 10/10 bits(X/Y) 右下為正
+	output Collision_Enable = 1; // 是否可以碰撞 1 可 0 會穿透
+	
+	// 輸入
+	input [3:0]Collision; // 碰撞 (上/下/左/右)
+	input [10:0]Collision_Type;   // 碰撞物體的型態
+	input clk,rst; // Clock
+	input [9:0]Mario_Signal;
+	
+	// 瑪利歐獨有型態
+	// 輸出
+	output [10:0]Life; // 生命值
+	output [10:0]Score; // 分數
+	
+	// 輸入
+	input [3:0]Arrow; // 方向箭頭
+	
+
+
+	// 參數擺放區
+	parameter H_speed = 1; // 左右移動的速度
+	parameter V_speed = 1; // 上下移動的速度
+	parameter legth_size = 40;
+	parameter width_size = 25;
+	parameter begin_life = 3;
+	parameter Money_Score = 1;
+	// 變數區
+	reg [10:0]score; // 分數
+	reg [10:0]life = 3; // 生命值
+	//reg [31:0]coordinate; // 座標 10/10 bits(X/Y) 左上 0 0
+	wire [31:0]move_speed ;
+	wire [3:0]move_arrow; // 移動方向
+	
+	// 主程式
+	assign Score = score;
+	assign Life = life;
+	assign Size[31:16] = width_size;
+	assign Size[15:0] = legth_size;
+	assign move_speed[31:16] =  V_speed;
+	assign move_speed[15:0] =  H_speed;
+	
+	Move_Arrow ma(
+			.clk(clk), // Clock
+			// 輸出
+			.Move_Arrow(move_arrow), // 移動方向
+
+			// 輸入
+			.Collision(Collision), // 碰撞 (上/下/左/右)
+			.Arrow(Arrow), // 方向箭頭
+			.Enable_Jump(1) // 有沒有跳的功能
+	);
+	
+	
+	// 計算座標
+	Coordinate_Calculation cc(.clk(clk),
+										.rst(rst),
+										.Coordinate(Coordinate), // 座標
+										.Move_arrow(move_arrow), // 移動方向
+										.Move_speed(move_speed),    // 上下左右移動的速度
+										.Test(Test)
+										);
+										
+	// 碰撞物體互動
+	always@(posedge clk)
+	begin
+		// 吃到$$
+		if(Mario_Signal[0] == 1'b1)
+			score <= score + Money_Score;
+		else
+			score <= score;
+	end
+	
+	
+endmodule

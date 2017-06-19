@@ -226,9 +226,9 @@ assign			HEX2_DP			=	1'h1;
 assign			HEX3_D			=	7'h7F;
 assign			HEX3_DP			=	1'h1;
 
-assign			LEDG			=	10'h000;
 ////////////////////////	VGA			////////////////////////////
 wire			VGA_CTRL_CLK;
+wire	[20:0]	GAME_CLK; //for gaming clock
 wire	[9:0]	mVGA_X;
 wire	[9:0]	mVGA_Y;
 wire	[9:0]	mVGA_R;
@@ -247,6 +247,10 @@ assign	VGA_B	=	sVGA_B[3:0];
 //=======================================================
 
 ////////////////////////	VGA			////////////////////////////
+VGA_REAL_GAME_CLK u4
+		(	.inclk0(CLOCK_50),
+			.outclk(GAME_CLK)
+		);
 
 VGA_CLK		u1
 		(	.inclk0(CLOCK_50),
@@ -282,8 +286,16 @@ VGA_Pattern	u3
 			.iVGA_X(mVGA_X),
 			.iVGA_Y(mVGA_Y),
 			.iVGA_CLK(VGA_CTRL_CLK),
+			.action_clk(GAME_CLK[20]),
 			//	Control Signals
-			.iRST_n(BUTTON[0]),
+			.move_right(BUTTON[0]),
+			.move_jump(BUTTON[1]),
+			.move_left(BUTTON[2]),
+			.blk_data(1280'bz),
+			.bio_data(640'bz),
+			.blk_id_all(200'bz),
+			.bio_id_all(100'bz),
+			.char_data(/*64'bz*/64'b0000000000101000000000000010100000000001101001000000000011001000),
 			.iColor_SW(SW[0])
 		);
 
